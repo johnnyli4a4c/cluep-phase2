@@ -1,0 +1,384 @@
+<div class="app-view-header">Dashboard
+   <small ng-bind="app.name + ' - ' + app.description"></small>
+</div>
+<div ng-controller="DashboardController" class="row">
+   <!-- START dashboard content-->
+   <div class="col-lg-9 fw-boxed">
+      <!-- START Line Graph-->
+      <div class="panel panel-default">
+         <div class="panel-heading">
+            <div class="panel-title">
+               Analytics</div>
+         </div>
+         <div class="panel-body">
+            <div class="row">
+               <div class="col-lg-12"></div>
+               <div class="text-center">
+                  <div ng-repeat="(key, impression) in impressionData" class="btn-switch btn-switch-{{colors[key]}} ml mr">
+                     <input type="checkbox" id="input-btn-switch-{{key+1}}" ng-model="lineSeries[key]" />
+                     <label for="input-btn-switch-{{key+1}}" class="btn btn-fw btn-{{colors[key]}}">
+                        <em class="fa fa-check"></em>
+                        <strong>{{ impression.label }}</strong>
+                     </label>
+                  </div>
+               </div>
+               <div class="col-md-12">
+                  <flot dataset="impressionData" options="chartLineFlotChart" series="{lines: lineSeries, points: lineSeries}"></flot>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- END Line Graph-->
+      <!-- START Responsive table-->
+      <div ng-init="radioModel = 'campaign'" class="panel panel-default">
+         <div class="panel-body">
+            <div class="text-center pt pb mb">
+               <label ng-model="radioModel" btn-radio="'campaign'" class="btn btn-primary">Campaign</label>
+               <label ng-model="radioModel" btn-radio="'ads'" class="btn btn-primary">Ads</label>
+               <label ng-model="radioModel" btn-radio="'conversions'" class="btn btn-primary">Conversions</label>
+               <label ng-model="radioModel" btn-radio="'appReport'" class="btn btn-primary">App Report</label>
+            </div>
+            <div ng-show="radioModel=='campaign'" class="table-responsive table-bordered">
+               <table class="table table-striped text-center">
+                  <thead>
+                     <tr>
+                        <th class="text-center"></th>
+                        <th class="text-center">Impressions</th>
+                        <th class="text-center">Clicks</th>
+                        <th class="text-center">CTR</th>
+                        <th class="text-center">Conversions</th>
+                        <th class="text-center">Cost</th>
+                        <th class="text-center">Budget</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr ng-repeat="(key, target) in campaigns">
+                        <td>{{ target.name }}</td>
+                        <td>{{ sum(target.impressions, 'value') }}</td>
+                        <td>{{ sum(target.clicks, 'value') }}</td>
+                        <td>{{ sum(target.ctr, 'value') }}</td>
+                        <td>{{ sum(target.conversions, 'value') }}</td>
+                        <td>${{ target.cost }}</td>
+                        <td>${{ target.budget }}</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+            <div ng-show="radioModel=='ads'" class="table-responsive table-bordered">
+               <table class="table table-striped text-center">
+                  <thead>
+                     <tr>
+                        <th class="text-center">Preview</th>
+                        <th class="text-center">Impressions</th>
+                        <th class="text-center">Clicks</th>
+                        <th class="text-center">CTR</th>
+                        <th class="text-center">Conversions</th>
+                        <th class="text-center">Cost</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr ng-repeat="(key, campaign) in campaigns">
+                        <td>No Preview</td>
+                        <td>{{ sum(campaign.impressions, 'value') }}</td>
+                        <td>{{ sum(campaign.clicks, 'value') }}</td>
+                        <td>{{ sum(campaign.ctr, 'value') }}</td>
+                        <td>{{ sum(campaign.conversions, 'value') }}</td>
+                        <td>${{ campaign.cost }}</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+            <div ng-show="radioModel=='conversions'" class="table-responsive table-bordered">
+               <table class="table table-striped text-center">
+                  <thead>
+                     <tr>
+                        <th class="text-center">Converesion goal</th>
+                        <th class="text-center">Conversions</th>
+                        <th class="text-center">Ad name</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr ng-repeat="(key, goal) in conversions">
+                        <td>{{ goal.objective }}</td>
+                        <td>{{ sum(goal.conversions, 'value') }}</td>
+                        <td>{{ goal.adname }}</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+            <div ng-show="radioModel=='appReport'" class="table-responsive table-bordered">
+               <table class="table table-striped text-center">
+                  <thead>
+                     <tr>
+                        <th class="text-center">App</th>
+                        <th class="text-center">Impressions</th>
+                        <th class="text-center">Clicks</th>
+                        <th class="text-center">CTR</th>
+                        <th class="text-center">Conversions</th>
+                        <th class="text-center">Cost</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr ng-repeat="(key, app) in apps">
+                        <td>{{ app.name }}</td>
+                        <td>{{ sum(app.impressions, 'value') }}</td>
+                        <td>{{ sum(app.clicks, 'value') }}</td>
+                        <td>{{ sum(app.ctr, 'value') }}</td>
+                        <td>{{ sum(app.conversions, 'value') }}</td>
+                        <td>${{ sumapp.cost }}</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
+      <!-- END Responsive table-->
+   </div>
+   <!-- END dashboard content-->
+   <!-- START dashboard sidebar-->
+   <aside class="col-lg-3 fw-boxed">
+      <div class="row">
+         <div class="col-lg-6 col-sm-3 col-xs-6">
+            <div ripple="" class="panel panel-default">
+               <div ng-class="'bg-' + app.theme.name" class="panel-body">
+                  <h1 class="text-thin mt">150</h1>
+                  <div class="text-right text-sm text-muted">Transactions</div>
+               </div>
+            </div>
+         </div>
+         <div class="col-lg-6 col-sm-3 col-xs-6">
+            <div ripple="" class="panel panel-default">
+               <div class="panel-body">
+                  <h1 class="text-thin mt">700</h1>
+                  <div class="text-right text-sm text-muted">Users</div>
+               </div>
+            </div>
+         </div>
+         <div class="col-lg-6 col-sm-3 col-xs-6">
+            <div ripple="" class="panel panel-default">
+               <div class="panel-body">
+                  <h1 class="text-thin mt">699</h1>
+                  <div class="text-right text-sm text-muted">Views</div>
+               </div>
+            </div>
+         </div>
+         <div class="col-lg-6 col-sm-3 col-xs-6">
+            <div ripple="" class="panel panel-default">
+               <div ng-class="'bg-' + app.theme.name" class="panel-body">
+                  <h1 class="text-thin mt">96</h1>
+                  <div class="text-right text-sm text-muted">Downloads</div>
+               </div>
+            </div>
+         </div>
+         <div class="col-xs-12">
+            <div class="panel panel-default">
+               <div ng-class="'bg-' + app.theme.name" class="panel-body">
+                  <h2 class="text-thin mt">New contacts</h2>
+                  <div class="clearfix">
+                     <div class="pull-right">
+                        <ul class="list-inline m0">
+                           <li class="p0">
+                              <a href="">
+                                 <img src="app/img/user/02.jpg" alt="Follower" class="img-responsive img-circle thumb24" />
+                              </a>
+                           </li>
+                           <li class="p0">
+                              <a href="">
+                                 <img src="app/img/user/01.jpg" alt="Follower" class="img-responsive img-circle thumb24" />
+                              </a>
+                           </li>
+                           <li class="p0">
+                              <a href="">
+                                 <img src="app/img/user/03.jpg" alt="Follower" class="img-responsive img-circle thumb24" />
+                              </a>
+                           </li>
+                           <li class="p0">
+                              <a href="">
+                                 <img src="app/img/user/04.jpg" alt="Follower" class="img-responsive img-circle thumb24" />
+                              </a>
+                           </li>
+                           <li class="p0">
+                              <a href="" class="v-middle">
+                                 <strong>+7</strong>
+                              </a>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-lg-12 col-md-6">
+            <div ng-class="'panel-' + app.theme.name" class="panel">
+               <div class="panel-heading">
+                  <div ng-class="'bg-' + app.theme.name" class="panel-title">
+                     <em class="icon-clock fa-lg pull-right text-muted"></em>Activity</div>
+               </div>
+               <div class="panel-body pt0">
+                  <div class="smoothy">
+                     <scrollable class="pt">
+                        <!-- START timeline-->
+                        <ul class="timeline-alt">
+                           <li data-datetime="14 Oct" class="timeline-separator"></li>
+                           <!-- START timeline item-->
+                           <li>
+                              <div class="timeline-badge timeline-badge-sm thumb-32 bg-purple">
+                                 <em class="fa fa-users"></em>
+                              </div>
+                              <div class="timeline-date">
+                                 <time datetime="10m"></time>
+                              </div>
+                              <div class="timeline-panel">
+                                 <strong>Client Meeting</strong>
+                                 <div class="text-muted">Green Offfice - Av 123 St Floor 2</div>
+                              </div>
+                           </li>
+                           <!-- END timeline item-->
+                           <!-- START timeline item-->
+                           <li>
+                              <div class="timeline-badge timeline-badge-sm bg-amber">
+                                 <em class="fa fa-phone"></em>
+                              </div>
+                              <div class="timeline-date">
+                                 <time datetime="1h"></time>
+                              </div>
+                              <div class="timeline-panel">
+                                 <strong>Call</strong>
+                                 <div class="text-muted">From: <a href="tel:+011231987">Michael</a>.
+                                    <em>No message left.</em>
+                                 </div>
+                              </div>
+                           </li>
+                           <!-- END timeline item-->
+                           <!-- START timeline item-->
+                           <li>
+                              <div class="timeline-badge timeline-badge-sm bg-info">
+                                 <em class="fa fa-envelope"></em>
+                              </div>
+                              <div class="timeline-date">
+                                 <time datetime="3h"></time>
+                              </div>
+                              <div class="timeline-panel">
+                                 <strong>New invitation</strong>
+                                 <div class="text-muted">From:
+                                    <strong>UX Design Team</strong>
+                                 </div>
+                              </div>
+                           </li>
+                           <!-- END timeline item-->
+                           <li data-datetime="13 Oct" class="timeline-separator"></li>
+                           <!-- START timeline item-->
+                           <li>
+                              <div class="timeline-badge timeline-badge-sm bg-warning">
+                                 <em class="fa fa-upload"></em>
+                              </div>
+                              <div class="timeline-date">
+                                 <time datetime="9am"></time>
+                              </div>
+                              <div class="timeline-panel">
+                                 <strong>File upload</strong>
+                                 <a href="">
+                                    <div class="text-bold">angular+bs.zip</div>
+                                 </a>
+                              </div>
+                           </li>
+                           <!-- END timeline item-->
+                        </ul>
+                        <!-- END timeline-->
+                     </scrollable>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="col-lg-12 col-md-6">
+            <div ng-class="'panel-' + app.theme.name" class="panel">
+               <div class="panel-heading">
+                  <div ng-class="'bg-' + app.theme.name" class="panel-title">
+                     <em class="icon-speech-bubble fa-lg pull-right text-muted"></em>Team chat</div>
+               </div>
+               <div class="panel-body pt0">
+                  <div class="smoothy">
+                     <scrollable class="pt">
+                        <ul class="chat">
+                           <li class="left clearfix">
+                              <span class="chat-img pull-left">
+                                 <img src="app/img/user/01.jpg" alt="Image" class="img-circle thumb48" />
+                              </span>
+                              <div class="chat-body clearfix">
+                                 <div class="chat-header">
+                                    <a href="" class="text-inverse">
+                                       <strong>Florence Douglas</strong>
+                                    </a>
+                                    <small class="pull-right text-muted">
+                                       <span class="fa fa-time"></span>12m</small>
+                                 </div>
+                                 <div class="chat-msg">Suspendisse nisl nulla, interdum at fermentum eget, adipiscing in elit.</div>
+                              </div>
+                           </li>
+                           <li class="right clearfix">
+                              <span class="chat-img pull-right">
+                                 <img src="app/img/user/03.jpg" alt="Image" class="img-circle thumb48" />
+                              </span>
+                              <div class="chat-body clearfix">
+                                 <div class="chat-header">
+                                    <small class="text-muted">
+                                       <span class="fa fa-time"></span>13m</small>
+                                    <a href="" class="text-inverse">
+                                       <strong class="pull-right">Jon Elliott</strong>
+                                    </a>
+                                 </div>
+                                 <div class="chat-msg">Donec consequat venenatis orci, et sagittis risus pretium eget.</div>
+                              </div>
+                           </li>
+                           <li class="left clearfix">
+                              <span class="chat-img pull-left">
+                                 <img src="app/img/user/02.jpg" alt="Image" class="img-circle thumb48" />
+                              </span>
+                              <div class="chat-body clearfix">
+                                 <div class="chat-header">
+                                    <a href="" class="text-inverse">
+                                       <strong>Joel Miles</strong>
+                                    </a>
+                                    <small class="pull-right text-muted">
+                                       <span class="fa fa-time"></span>14m</small>
+                                 </div>
+                                 <div class="chat-msg">Mauris eleifend, libero nec cursus lacinia, tellus est pharetra orci, et pretium urna felis eget neque.</div>
+                              </div>
+                           </li>
+                           <li class="right clearfix">
+                              <span class="chat-img pull-right">
+                                 <img src="app/img/user/03.jpg" alt="Image" class="img-circle thumb48" />
+                              </span>
+                              <div class="chat-body clearfix">
+                                 <div class="chat-header">
+                                    <small class="text-muted">
+                                       <span class="fa fa-time"></span>15m</small>
+                                    <a href="" class="text-inverse">
+                                       <strong class="pull-right">Jon Elliott</strong>
+                                    </a>
+                                 </div>
+                                 <div class="chat-msg">Sed semper diam vitae purus tristique at scelerisque massa ultricies. Aliquam non eros dui.</div>
+                              </div>
+                           </li>
+                        </ul>
+                     </scrollable>
+                  </div>
+               </div>
+               <div class="panel-footer">
+                  <div class="input-group input-group-sm">
+                     <input type="text" placeholder="Type a message ..." class="form-control" />
+                     <span class="input-group-btn">
+                        <button type="button" class="btn btn-info">
+                           <small>Post</small>
+                        </button>
+                     </span>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </aside>
+   <!-- END dashboard sidebar-->
+</div>
